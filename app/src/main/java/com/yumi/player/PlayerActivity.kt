@@ -35,13 +35,15 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun setupGestures() {
-
         gestureDetector = GestureDetector(
             this,
             object : GestureDetector.SimpleOnGestureListener() {
 
-                override fun onDoubleTap(event: MotionEvent): Boolean {
+                override fun onDown(event: MotionEvent): Boolean {
+                    return true
+                }
 
+                override fun onDoubleTap(event: MotionEvent): Boolean {
                     val screenWidth = playerView.width
 
                     if (event.x < screenWidth / 2f) {
@@ -50,10 +52,6 @@ class PlayerActivity : AppCompatActivity() {
                         playerManager.seekForward(seekSeconds)
                     }
 
-                    return true
-                }
-
-                override fun onDown(event: MotionEvent): Boolean {
                     return true
                 }
 
