@@ -42,7 +42,11 @@ class MainActivity : AppCompatActivity() {
 
         videoRepository = VideoRepository(this)
 
-        videoAdapter = VideoAdapter(emptyList())
+        videoAdapter = VideoAdapter(emptyList()) { video ->
+            val intent = Intent(this, PlayerActivity::class.java)
+            intent.putExtra("video_uri", video.uri)
+            startActivity(intent)
+        }
 
         recyclerView.layoutManager =
             LinearLayoutManager(this)
