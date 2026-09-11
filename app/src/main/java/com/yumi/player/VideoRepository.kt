@@ -26,7 +26,9 @@ class VideoRepository(private val context: Context) {
     private fun isVideoFile(name: String?): Boolean {
         if (name == null) return false
 
-        val extension = name.substringAfterLast('.', "").lowercase()
+        val extension = name
+            .substringAfterLast('.', "")
+            .lowercase()
 
         return extension in setOf(
             "mp4",
