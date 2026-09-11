@@ -7,7 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class VideoAdapter(
-    private var videos: List<VideoItem>
+    private var videos: List<VideoItem>,
+    private val onVideoClick: (VideoItem) -> Unit
 ) : RecyclerView.Adapter<VideoAdapter.VideoViewHolder>() {
 
     class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -33,6 +34,10 @@ class VideoAdapter(
 
         holder.name.text = video.name
         holder.duration.text = formatDuration(video.duration)
+
+        holder.itemView.setOnClickListener {
+            onVideoClick(video)
+        }
     }
 
     override fun getItemCount(): Int {
