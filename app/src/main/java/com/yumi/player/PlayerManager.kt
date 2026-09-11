@@ -2,11 +2,12 @@ package com.yumi.player
 
 import android.content.Context
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 
 class PlayerManager(
-    private val context: Context,
+    context: Context,
     private val playerView: PlayerView
 ) {
 
@@ -25,7 +26,8 @@ class PlayerManager(
     }
 
     fun setSpeed(speed: Float) {
-        player.setPlaybackSpeed(speed)
+        player.playbackParameters =
+            PlaybackParameters(speed)
     }
 
     fun getSpeed(): Float {
@@ -33,12 +35,15 @@ class PlayerManager(
     }
 
     fun seekForward(seconds: Long) {
-        player.seekTo(player.currentPosition + seconds * 1000)
+        player.seekTo(
+            player.currentPosition + seconds * 1000
+        )
     }
 
     fun seekBackward(seconds: Long) {
         player.seekTo(
-            (player.currentPosition - seconds * 1000).coerceAtLeast(0)
+            (player.currentPosition - seconds * 1000)
+                .coerceAtLeast(0)
         )
     }
 
