@@ -1,10 +1,12 @@
-
 package com.yumi.player
 
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.ui.PlayerView
 
 class PlayerActivity : AppCompatActivity() {
@@ -15,6 +17,7 @@ class PlayerActivity : AppCompatActivity() {
 
     private var seekSeconds = 5L
     private var videoUri: String? = null
+    private var previousSpeed = 1f
 
     private val preferences by lazy {
         getSharedPreferences("yumi_settings", MODE_PRIVATE)
@@ -22,7 +25,12 @@ class PlayerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContentView(R.layout.activity_player)
+
+        hideSystemBars()
 
         playerView = findViewById(R.id.playerView)
 
@@ -49,6 +57,30 @@ class PlayerActivity : AppCompatActivity() {
         setupGestures()
     }
 
+    private fun hideSystemBars() {
+        val controller = WindowInsetsControllerCompat(
+            window,
+            window.decorView
+        )
+
+        controller.hide(
+            WindowInsetsCompat.Type.statusBars() or
+                WindowInsetsCompat.Type.navigationBars()
+        )
+
+        controller.systemBarsBehavior =
+            WindowInsetsControllerCompat
+                .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+
+        if (hasFocus) {
+            hideSystemBars()
+        }
+    }
+
     private fun setupGestures() {
         gestureDetector = GestureDetector(
             this,
@@ -71,6 +103,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
 
                 override fun onLongPress(event: MotionEvent) {
+                    previousSpeed = playerManager.getSpeed()
                     playerManager.setSpeed(2f)
                 }
             }
@@ -82,7 +115,7 @@ class PlayerActivity : AppCompatActivity() {
             when (event.action) {
                 MotionEvent.ACTION_UP,
                 MotionEvent.ACTION_CANCEL -> {
-                    playerManager.setSpeed(1f)
+                    playerManager.setSpeed(previousSpeed)
                 }
             }
 
@@ -106,7 +139,10 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        playerManager.release()
+        if (::playerManager.isInitialized) {
+            playerManager.release()
+        }
+
         super.onDestroy()
     }
 }
