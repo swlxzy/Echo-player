@@ -1,3 +1,4 @@
+
 package com.yumi.player
 
 import android.os.Bundle
@@ -13,6 +14,11 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var gestureDetector: GestureDetector
 
     private var seekSeconds = 5L
+    private var videoUri: String? = null
+
+    private val preferences by lazy {
+        getSharedPreferences("yumi_settings", MODE_PRIVATE)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +31,19 @@ class PlayerActivity : AppCompatActivity() {
             playerView
         )
 
-        val videoUri = intent.getStringExtra("video_uri")
+        videoUri = intent.getStringExtra("video_uri")
 
-        if (videoUri != null) {
-            playerManager.play(videoUri)
+        videoUri?.let { uri ->
+            playerManager.play(uri)
+
+            val savedPosition = preferences.getLong(
+                "position_$uri",
+                0L
+            )
+
+            if (savedPosition > 0L) {
+                playerManager.seekTo(savedPosition)
+            }
         }
 
         setupGestures()
@@ -60,9 +75,10 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         )
+    }
 
-        playerView.setOnTouchListener { _, event ->
-
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (::gestureDetector.isInitialized) {
             when (event.action) {
                 MotionEvent.ACTION_UP,
                 MotionEvent.ACTION_CANCEL -> {
@@ -71,7 +87,21 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             gestureDetector.onTouchEvent(event)
-            true
+        }
+
+        return super.dispatchTouchEvent(event)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        videoUri?.let { uri ->
+            preferences.edit()
+                .putLong(
+                    "position_$uri",
+                    playerManager.getCurrentPosition()
+                )
+                .apply()
         }
     }
 
