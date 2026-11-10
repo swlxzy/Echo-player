@@ -1,3 +1,4 @@
+
 package com.yumi.player
 
 import android.view.LayoutInflater
@@ -33,7 +34,17 @@ class VideoAdapter(
         val video = videos[position]
 
         holder.name.text = video.name
-        holder.duration.text = formatDuration(video.duration)
+
+        val durationText = formatDuration(video.duration)
+        val sizeText = formatFileSize(video.sizeBytes)
+        val resolutionText = if (video.width > 0 && video.height > 0) {
+            "${video.width} × ${video.height}"
+        } else {
+            "Çözünürlük bilinmiyor"
+        }
+
+        holder.duration.text =
+            "$durationText • $sizeText • $resolutionText"
 
         holder.itemView.setOnClickListener {
             onVideoClick(video)
@@ -59,6 +70,18 @@ class VideoAdapter(
             String.format("%02d:%02d:%02d", hours, minutes, seconds)
         } else {
             String.format("%02d:%02d", minutes, seconds)
+        }
+    }
+
+    private fun formatFileSize(sizeBytes: Long): String {
+        if (sizeBytes <= 0) return "Bilinmeyen boyut"
+
+        val megabytes = sizeBytes / (1024.0 * 1024.0)
+
+        return if (megabytes >= 1024) {
+            String.format("%.2f GB", megabytes / 1024)
+        } else {
+            String.format("%.1f MB", megabytes)
         }
     }
 }
