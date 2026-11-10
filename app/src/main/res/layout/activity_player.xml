@@ -17,4 +17,19 @@
         app:keep_content_on_player_reset="true"
         app:resize_mode="fit" />
 
+    <TextView
+        android:id="@+id/orientationLockButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:background="#66000000"
+        android:gravity="center"
+        android:text="↻"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
+        android:contentDescription="Ekran döndürme kilidi"
+        android:clickable="true"
+        android:focusable="true" />
+
 </FrameLayout>
