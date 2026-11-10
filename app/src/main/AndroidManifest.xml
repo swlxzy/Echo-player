@@ -9,7 +9,6 @@
 
         <activity
             android:name=".PlayerActivity"
-            android:screenOrientation="landscape"
             android:exported="false" />
 
         <activity
