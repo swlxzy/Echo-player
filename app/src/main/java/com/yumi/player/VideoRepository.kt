@@ -27,7 +27,8 @@ class VideoRepository(private val context: Context) {
                     duration = metadata.first,
                     sizeBytes = file.length(),
                     width = metadata.second,
-                    height = metadata.third
+                    height = metadata.third,
+                    lastModified = file.lastModified()
                 )
             }
     }
