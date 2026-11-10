@@ -1,8 +1,10 @@
 package com.yumi.player
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -14,10 +16,12 @@ class PlayerActivity : AppCompatActivity() {
     private lateinit var playerView: PlayerView
     private lateinit var playerManager: PlayerManager
     private lateinit var gestureDetector: GestureDetector
+    private lateinit var orientationLockButton: TextView
 
     private var seekSeconds = 5L
     private var videoUri: String? = null
     private var previousSpeed = 1f
+    private var isOrientationLocked = false
 
     private val preferences by lazy {
         getSharedPreferences("yumi_settings", MODE_PRIVATE)
@@ -33,6 +37,18 @@ class PlayerActivity : AppCompatActivity() {
         hideSystemBars()
 
         playerView = findViewById(R.id.playerView)
+        orientationLockButton =
+            findViewById(R.id.orientationLockButton)
+
+        isOrientationLocked =
+            savedInstanceState?.getBoolean("orientation_locked") ?: false
+
+        updateOrientationLock()
+
+        orientationLockButton.setOnClickListener {
+            isOrientationLocked = !isOrientationLocked
+            updateOrientationLock()
+        }
 
         playerManager = PlayerManager(
             this,
@@ -55,6 +71,24 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         setupGestures()
+    }
+
+    private fun updateOrientationLock() {
+        if (isOrientationLocked) {
+            requestedOrientation =
+                ActivityInfo.SCREEN_ORIENTATION_LOCKED
+
+            orientationLockButton.text = "🔒"
+            orientationLockButton.contentDescription =
+                "Ekran yönü kilitli"
+        } else {
+            requestedOrientation =
+                ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
+
+            orientationLockButton.text = "↻"
+            orientationLockButton.contentDescription =
+                "Otomatik döndürme açık"
+        }
     }
 
     private fun hideSystemBars() {
@@ -123,6 +157,15 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         return super.dispatchTouchEvent(event)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putBoolean(
+            "orientation_locked",
+            isOrientationLocked
+        )
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onPause() {
