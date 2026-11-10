@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -5,100 +6,156 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
-    android:padding="16dp">
+    android:background="#090909"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp">
 
-    <TextView
+    <!-- Üst çubuk -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="YUMI PLAYER"
-        android:textSize="26sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface" />
+        android:layout_height="54dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="20dp"
-        android:text="Video kütüphanen"
-        android:textSize="14sp"
-        android:textColor="?attr/colorOnSurfaceVariant" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardCornerRadius="14dp"
-        app:cardElevation="1dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="?attr/colorOutline">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/textAppName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_weight="1"
+            android:text="yumi"
+            android:textColor="#F2F2F2"
+            android:textSize="19sp"
+            android:fontFamily="sans"
+            android:letterSpacing="0.02"
+            android:gravity="center_vertical" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Video klasörünü seç"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface" />
+        <TextView
+            android:id="@+id/buttonSearch"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="⌕"
+            android:textSize="29sp"
+            android:textColor="#DADADA"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Ara" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="12dp"
-                android:text="Cihazındaki videoları kütüphanene ekle."
-                android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+        <TextView
+            android:id="@+id/buttonSort"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="☷"
+            android:textSize="23sp"
+            android:textColor="#DADADA"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Sırala ve filtrele" />
 
-            <Button
-                android:id="@+id/buttonSelectFolder"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Klasör Seç" />
+        <TextView
+            android:id="@+id/buttonSettings"
+            android:layout_width="42dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="⚙"
+            android:textSize="21sp"
+            android:textColor="#DADADA"
+            android:background="?attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Ayarlar" />
 
-        </LinearLayout>
+    </LinearLayout>
 
-    </com.google.android.material.card.MaterialCardView>
+    <!-- Klasör ve görünüm araçları -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp">
 
+        <TextView
+            android:id="@+id/buttonSelectFolder"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="▣  Video klasörü seç"
+            android:textColor="#E5E5E5"
+            android:textSize="13sp"
+            android:background="#191919"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <TextView
+            android:id="@+id/buttonListView"
+            android:layout_width="42dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="8dp"
+            android:gravity="center"
+            android:text="☰"
+            android:textSize="20sp"
+            android:textColor="#AFAFAF"
+            android:background="#191919"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Liste görünümü" />
+
+        <TextView
+            android:id="@+id/buttonGridView"
+            android:layout_width="42dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="5dp"
+            android:gravity="center"
+            android:text="▦"
+            android:textSize="22sp"
+            android:textColor="#FFFFFF"
+            android:background="#292929"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Izgara görünümü" />
+
+    </LinearLayout>
+
+    <!-- Arama alanı: arama ikonuna basılınca açılacak -->
     <EditText
         android:id="@+id/editSearch"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Video adına göre ara..."
+        android:layout_height="44dp"
+        android:layout_marginBottom="10dp"
+        android:background="#191919"
+        android:hint="Video ara..."
+        android:textColor="#FFFFFF"
+        android:textColorHint="#888888"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
         android:singleLine="true"
         android:inputType="text"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:padding="12dp"
-        android:layout_marginBottom="8dp" />
+        android:visibility="gone" />
 
+    <!-- Eski sıralama altyapısıyla uyumluluk için korunuyor -->
     <Spinner
         android:id="@+id/spinnerSort"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp" />
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:visibility="gone" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:text="Videolar"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="?attr/colorOnSurface" />
-
+    <!-- Video listesi -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewVideos"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingBottom="8dp" />
+        android:paddingTop="2dp"
+        android:paddingBottom="12dp"
+        android:overScrollMode="never" />
 
 </LinearLayout>
