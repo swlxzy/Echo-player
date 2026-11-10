@@ -4,12 +4,18 @@ package com.yumi.player
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 import java.util.concurrent.Executors
 
 class MainActivity : AppCompatActivity() {
@@ -17,8 +23,21 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var videoAdapter: VideoAdapter
     private lateinit var videoRepository: VideoRepository
+    private lateinit var editSearch: EditText
+    private lateinit var spinnerSort: Spinner
 
     private val scanExecutor = Executors.newSingleThreadExecutor()
+
+    private var allVideos: List<VideoItem> = emptyList()
+
+    private val sortOptions = listOf(
+        "İsim: A-Z",
+        "İsim: Z-A",
+        "Boyut: Büyükten küçüğe",
+        "Boyut: Küçükten büyüğe",
+        "Tarih: Yeniden eskiye",
+        "Tarih: Eskiden yeniye"
+    )
 
     private val preferences by lazy {
         getSharedPreferences("yumi_settings", MODE_PRIVATE)
@@ -62,6 +81,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView =
             findViewById(R.id.recyclerViewVideos)
 
+        editSearch =
+            findViewById(R.id.editSearch)
+
+        spinnerSort =
+            findViewById(R.id.spinnerSort)
+
         videoRepository = VideoRepository(this)
 
         videoAdapter = VideoAdapter(emptyList()) { video ->
@@ -72,6 +97,56 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = videoAdapter
+
+        val spinnerAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            sortOptions
+        )
+
+        spinnerAdapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        spinnerSort.adapter = spinnerAdapter
+
+        editSearch.addTextChangedListener(object : TextWatcher {
+
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {}
+
+            override fun onTextChanged(
+                s: CharSequence?,
+                start: Int,
+                before: Int,
+                count: Int
+            ) {
+                applyFilters()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        spinnerSort.onItemSelectedListener =
+            object : android.widget.AdapterView.OnItemSelectedListener {
+
+                override fun onItemSelected(
+                    parent: android.widget.AdapterView<*>?,
+                    view: android.view.View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    applyFilters()
+                }
+
+                override fun onNothingSelected(
+                    parent: android.widget.AdapterView<*>?
+                ) {}
+            }
 
         buttonSelectFolder.setOnClickListener {
             folderPicker.launch(null)
@@ -107,7 +182,8 @@ class MainActivity : AppCompatActivity() {
 
                 runOnUiThread {
                     if (!isFinishing && !isDestroyed) {
-                        videoAdapter.updateVideos(videos)
+                        allVideos = videos
+                        applyFilters()
 
                         Toast.makeText(
                             this,
@@ -129,6 +205,48 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun applyFilters() {
+        val query = editSearch.text
+            .toString()
+            .trim()
+            .lowercase(Locale.getDefault())
+
+        val filteredVideos = allVideos.filter { video ->
+            video.name.lowercase(Locale.getDefault()).contains(query)
+        }
+
+        val sortedVideos = when (spinnerSort.selectedItemPosition) {
+
+            0 -> filteredVideos.sortedBy {
+                it.name.lowercase(Locale.getDefault())
+            }
+
+            1 -> filteredVideos.sortedByDescending {
+                it.name.lowercase(Locale.getDefault())
+            }
+
+            2 -> filteredVideos.sortedByDescending {
+                it.sizeBytes
+            }
+
+            3 -> filteredVideos.sortedBy {
+                it.sizeBytes
+            }
+
+            4 -> filteredVideos.sortedByDescending {
+                it.lastModified
+            }
+
+            5 -> filteredVideos.sortedBy {
+                it.lastModified
+            }
+
+            else -> filteredVideos
+        }
+
+        videoAdapter.updateVideos(sortedVideos)
     }
 
     override fun onDestroy() {
