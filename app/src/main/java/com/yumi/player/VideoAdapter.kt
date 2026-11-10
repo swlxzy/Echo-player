@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
@@ -39,15 +41,22 @@ class VideoAdapter(
 
     class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.textVideoName)
-        val duration: TextView = view.findViewById(R.id.textVideoDuration)
+
+        val duration: TextView =
+            view.findViewById(R.id.textVideoDuration)
+
         val thumbnail: ImageView =
             view.findViewById(R.id.imageVideoThumbnail)
+
+        val content: LinearLayout =
+            view.findViewById(R.id.videoItemContent)
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): VideoViewHolder {
+
         if (!::repository.isInitialized) {
             repository = VideoRepository(
                 parent.context.applicationContext
@@ -65,6 +74,14 @@ class VideoAdapter(
         position: Int
     ) {
         val video = videos[position]
+
+        val recyclerView =
+            holder.itemView.parent as? RecyclerView
+
+        val isGrid =
+            recyclerView?.layoutManager is GridLayoutManager
+
+        configureItemLayout(holder, isGrid)
 
         holder.name.text = video.name
 
@@ -85,6 +102,94 @@ class VideoAdapter(
 
         holder.itemView.setOnClickListener {
             onVideoClick(video)
+        }
+    }
+
+    private fun configureItemLayout(
+        holder: VideoViewHolder,
+        isGrid: Boolean
+    ) {
+        val context = holder.itemView.context
+
+        fun dp(value: Int): Int {
+            return (value * context.resources.displayMetrics.density)
+                .toInt()
+        }
+
+        holder.content.orientation =
+            if (isGrid) {
+                LinearLayout.VERTICAL
+            } else {
+                LinearLayout.HORIZONTAL
+            }
+
+        holder.content.setPadding(
+            dp(if (isGrid) 6 else 10),
+            dp(if (isGrid) 6 else 10),
+            dp(if (isGrid) 6 else 10),
+            dp(if (isGrid) 6 else 10)
+        )
+
+        val thumbnailParams =
+            holder.thumbnail.layoutParams
+
+        thumbnailParams.width =
+            if (isGrid) {
+                ViewGroup.LayoutParams.MATCH_PARENT
+            } else {
+                dp(120)
+            }
+
+        thumbnailParams.height =
+            dp(if (isGrid) 110 else 76)
+
+        holder.thumbnail.layoutParams = thumbnailParams
+
+        val nameParams =
+            holder.name.layoutParams as LinearLayout.LayoutParams
+
+        nameParams.width =
+            ViewGroup.LayoutParams.MATCH_PARENT
+
+        nameParams.height =
+            ViewGroup.LayoutParams.WRAP_CONTENT
+
+        nameParams.marginStart = dp(if (isGrid) 0 else 12)
+        nameParams.topMargin = dp(if (isGrid) 6 else 0)
+
+        holder.name.layoutParams = nameParams
+
+        holder.name.textSize =
+            if (isGrid) 12f else 16f
+
+        holder.name.maxLines =
+            if (isGrid) 2 else 2
+
+        val durationParams =
+            holder.duration.layoutParams as LinearLayout.LayoutParams
+
+        durationParams.width =
+            ViewGroup.LayoutParams.MATCH_PARENT
+
+        durationParams.height =
+            ViewGroup.LayoutParams.WRAP_CONTENT
+
+        durationParams.marginStart = 0
+        durationParams.topMargin = dp(if (isGrid) 4 else 8)
+
+        holder.duration.layoutParams = durationParams
+
+        holder.duration.textSize =
+            if (isGrid) 10f else 12f
+
+        val cardParams =
+            holder.itemView.layoutParams as? ViewGroup.MarginLayoutParams
+
+        cardParams?.let {
+            it.marginStart = dp(if (isGrid) 3 else 0)
+            it.marginEnd = dp(if (isGrid) 3 else 0)
+            it.bottomMargin = dp(if (isGrid) 7 else 10)
+            holder.itemView.layoutParams = it
         }
     }
 
