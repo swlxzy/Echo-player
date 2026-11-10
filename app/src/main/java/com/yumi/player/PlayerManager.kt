@@ -1,3 +1,4 @@
+
 package com.yumi.player
 
 import android.content.Context
@@ -11,7 +12,9 @@ class PlayerManager(
     private val playerView: PlayerView
 ) {
 
-    private val player = ExoPlayer.Builder(context).build()
+    private val player = ExoPlayer.Builder(
+        context.applicationContext
+    ).build()
 
     init {
         playerView.player = player
@@ -25,9 +28,33 @@ class PlayerManager(
         player.play()
     }
 
+    fun pause() {
+        player.pause()
+    }
+
+    fun resume() {
+        player.play()
+    }
+
+    fun isPlaying(): Boolean {
+        return player.isPlaying
+    }
+
+    fun getCurrentPosition(): Long {
+        return player.currentPosition
+    }
+
+    fun getDuration(): Long {
+        return player.duration.coerceAtLeast(0L)
+    }
+
+    fun seekTo(positionMs: Long) {
+        player.seekTo(positionMs.coerceAtLeast(0L))
+    }
+
     fun setSpeed(speed: Float) {
         player.playbackParameters =
-            PlaybackParameters(speed)
+            PlaybackParameters(speed.coerceIn(0.5f, 2f))
     }
 
     fun getSpeed(): Float {
@@ -43,11 +70,12 @@ class PlayerManager(
     fun seekBackward(seconds: Long) {
         player.seekTo(
             (player.currentPosition - seconds * 1000)
-                .coerceAtLeast(0)
+                .coerceAtLeast(0L)
         )
     }
 
     fun release() {
+        playerView.player = null
         player.release()
     }
 }
