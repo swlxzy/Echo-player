@@ -1,14 +1,89 @@
-
 package com.yumi.player
 
+import android.content.ContentUris
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
 
 class VideoRepository(private val context: Context) {
+
+    fun getAllVideos(): List<VideoItem> {
+        val videos = mutableListOf<VideoItem>()
+
+        val collection = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+
+        val projection = arrayOf(
+            MediaStore.Video.Media._ID,
+            MediaStore.Video.Media.DISPLAY_NAME,
+            MediaStore.Video.Media.DURATION,
+            MediaStore.Video.Media.SIZE,
+            MediaStore.Video.Media.WIDTH,
+            MediaStore.Video.Media.HEIGHT,
+            MediaStore.Video.Media.DATE_MODIFIED
+        )
+
+        try {
+            context.contentResolver.query(
+                collection,
+                projection,
+                null,
+                null,
+                "${MediaStore.Video.Media.DATE_ADDED} DESC"
+            )?.use { cursor ->
+
+                val idColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media._ID)
+
+                val nameColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DISPLAY_NAME)
+
+                val durationColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
+
+                val sizeColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE)
+
+                val widthColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.WIDTH)
+
+                val heightColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.HEIGHT)
+
+                val modifiedColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATE_MODIFIED)
+
+                while (cursor.moveToNext()) {
+                    val id = cursor.getLong(idColumn)
+
+                    val uri = ContentUris.withAppendedId(
+                        collection,
+                        id
+                    )
+
+                    videos.add(
+                        VideoItem(
+                            name = cursor.getString(nameColumn)
+                                ?: "Bilinmeyen video",
+                            uri = uri.toString(),
+                            duration = cursor.getLong(durationColumn),
+                            sizeBytes = cursor.getLong(sizeColumn),
+                            width = cursor.getInt(widthColumn),
+                            height = cursor.getInt(heightColumn),
+                            lastModified = cursor.getLong(modifiedColumn) * 1000L
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return videos
+    }
 
     fun getVideosFromFolder(folderUri: Uri): List<VideoItem> {
         val folder = DocumentFile.fromTreeUri(context, folderUri)
