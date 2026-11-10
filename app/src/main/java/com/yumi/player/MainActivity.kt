@@ -1,8 +1,10 @@
-
 package com.yumi.player
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,6 +16,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,6 +56,26 @@ class MainActivity : AppCompatActivity() {
     private val preferences by lazy {
         getSharedPreferences("yumi_settings", MODE_PRIVATE)
     }
+
+    private val videoPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+
+            val granted = permissions.values.any { it }
+
+            if (granted || hasVideoPermission()) {
+                loadAllVideos()
+            } else {
+                Toast.makeText(
+                    this,
+                    "Video izni verilmedi. Klasör seçerek devam edebilirsin.",
+                    Toast.LENGTH_LONG
+                ).show()
+
+                restoreSelectedFolder()
+            }
+        }
 
     private val folderPicker =
         registerForActivityResult(
@@ -164,7 +187,82 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        restoreSelectedFolder()
+        requestVideoPermission()
+    }
+
+    private fun getRequiredVideoPermissions(): Array<String> {
+        return when {
+            Build.VERSION.SDK_INT >= 34 -> arrayOf(
+                Manifest.permission.READ_MEDIA_VIDEO,
+                Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+            )
+
+            Build.VERSION.SDK_INT >= 33 -> arrayOf(
+                Manifest.permission.READ_MEDIA_VIDEO
+            )
+
+            else -> arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        }
+    }
+
+    private fun hasVideoPermission(): Boolean {
+        return when {
+            Build.VERSION.SDK_INT >= 34 -> {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                ) == PackageManager.PERMISSION_GRANTED ||
+                    ContextCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                    ) == PackageManager.PERMISSION_GRANTED
+            }
+
+            Build.VERSION.SDK_INT >= 33 -> {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_MEDIA_VIDEO
+                ) == PackageManager.PERMISSION_GRANTED
+            }
+
+            else -> {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED
+            }
+        }
+    }
+
+    private fun requestVideoPermission() {
+        if (hasVideoPermission()) {
+            loadAllVideos()
+        } else {
+            videoPermissionLauncher.launch(
+                getRequiredVideoPermissions()
+            )
+        }
+    }
+
+    private fun loadAllVideos() {
+        scanExecutor.execute {
+            val videos = videoRepository.getAllVideos()
+
+            runOnUiThread {
+                if (!isFinishing && !isDestroyed) {
+                    allVideos = videos
+                    applyFilters()
+
+                    Toast.makeText(
+                        this,
+                        "${videos.size} video bulundu.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     private fun toggleSearch() {
