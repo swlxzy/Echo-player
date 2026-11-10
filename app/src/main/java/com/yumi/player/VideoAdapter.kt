@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 class VideoAdapter(
@@ -37,11 +38,13 @@ class VideoAdapter(
 
         val durationText = formatDuration(video.duration)
         val sizeText = formatFileSize(video.sizeBytes)
-        val resolutionText = if (video.width > 0 && video.height > 0) {
-            "${video.width} × ${video.height}"
-        } else {
-            "Çözünürlük bilinmiyor"
-        }
+
+        val resolutionText =
+            if (video.width > 0 && video.height > 0) {
+                "${video.width} × ${video.height}"
+            } else {
+                "Çözünürlük bilinmiyor"
+            }
 
         holder.duration.text =
             "$durationText • $sizeText • $resolutionText"
@@ -51,13 +54,39 @@ class VideoAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return videos.size
-    }
+    override fun getItemCount(): Int = videos.size
 
     fun updateVideos(newVideos: List<VideoItem>) {
-        videos = newVideos
-        notifyDataSetChanged()
+        val oldVideos = videos
+        val updatedVideos = newVideos.toList()
+
+        val diffCallback = object : DiffUtil.Callback() {
+
+            override fun getOldListSize(): Int = oldVideos.size
+
+            override fun getNewListSize(): Int = updatedVideos.size
+
+            override fun areItemsTheSame(
+                oldItemPosition: Int,
+                newItemPosition: Int
+            ): Boolean {
+                return oldVideos[oldItemPosition].uri ==
+                    updatedVideos[newItemPosition].uri
+            }
+
+            override fun areContentsTheSame(
+                oldItemPosition: Int,
+                newItemPosition: Int
+            ): Boolean {
+                return oldVideos[oldItemPosition] ==
+                    updatedVideos[newItemPosition]
+            }
+        }
+
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        videos = updatedVideos
+        diffResult.dispatchUpdatesTo(this)
     }
 
     private fun formatDuration(durationMs: Long): String {
