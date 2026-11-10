@@ -1,4 +1,3 @@
-
 package com.yumi.player
 
 import android.graphics.Bitmap
@@ -41,22 +40,19 @@ class VideoAdapter(
 
     class VideoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val name: TextView = view.findViewById(R.id.textVideoName)
-
-        val duration: TextView =
-            view.findViewById(R.id.textVideoDuration)
-
+        val duration: TextView = view.findViewById(R.id.textVideoDuration)
         val thumbnail: ImageView =
             view.findViewById(R.id.imageVideoThumbnail)
-
         val content: LinearLayout =
             view.findViewById(R.id.videoItemContent)
+        val details: LinearLayout =
+            view.findViewById(R.id.videoItemDetails)
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): VideoViewHolder {
-
         if (!::repository.isInitialized) {
             repository = VideoRepository(
                 parent.context.applicationContext
@@ -75,11 +71,9 @@ class VideoAdapter(
     ) {
         val video = videos[position]
 
-        val recyclerView =
-            holder.itemView.parent as? RecyclerView
-
         val isGrid =
-            recyclerView?.layoutManager is GridLayoutManager
+            (holder.itemView.parent as? RecyclerView)
+                ?.layoutManager is GridLayoutManager
 
         configureItemLayout(holder, isGrid)
 
@@ -117,70 +111,58 @@ class VideoAdapter(
         }
 
         holder.content.orientation =
-            if (isGrid) {
-                LinearLayout.VERTICAL
-            } else {
-                LinearLayout.HORIZONTAL
-            }
+            if (isGrid) LinearLayout.VERTICAL
+            else LinearLayout.HORIZONTAL
 
         holder.content.setPadding(
-            dp(if (isGrid) 6 else 10),
-            dp(if (isGrid) 6 else 10),
-            dp(if (isGrid) 6 else 10),
-            dp(if (isGrid) 6 else 10)
+            dp(if (isGrid) 5 else 9),
+            dp(if (isGrid) 5 else 9),
+            dp(if (isGrid) 5 else 9),
+            dp(if (isGrid) 5 else 9)
         )
 
-        val thumbnailParams =
-            holder.thumbnail.layoutParams
-
+        val thumbnailParams = holder.thumbnail.layoutParams
         thumbnailParams.width =
-            if (isGrid) {
-                ViewGroup.LayoutParams.MATCH_PARENT
-            } else {
-                dp(120)
-            }
-
-        thumbnailParams.height =
-            dp(if (isGrid) 110 else 76)
-
+            if (isGrid) ViewGroup.LayoutParams.MATCH_PARENT
+            else dp(120)
+        thumbnailParams.height = dp(if (isGrid) 105 else 76)
         holder.thumbnail.layoutParams = thumbnailParams
+
+        val detailsParams =
+            holder.details.layoutParams as LinearLayout.LayoutParams
+
+        detailsParams.width =
+            if (isGrid) ViewGroup.LayoutParams.MATCH_PARENT else 0
+
+        detailsParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        detailsParams.weight = if (isGrid) 0f else 1f
+        detailsParams.marginStart = dp(if (isGrid) 0 else 12)
+        detailsParams.topMargin = dp(if (isGrid) 6 else 0)
+
+        holder.details.layoutParams = detailsParams
 
         val nameParams =
             holder.name.layoutParams as LinearLayout.LayoutParams
 
-        nameParams.width =
-            ViewGroup.LayoutParams.MATCH_PARENT
-
-        nameParams.height =
-            ViewGroup.LayoutParams.WRAP_CONTENT
-
-        nameParams.marginStart = dp(if (isGrid) 0 else 12)
-        nameParams.topMargin = dp(if (isGrid) 6 else 0)
-
+        nameParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+        nameParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+        nameParams.marginStart = 0
+        nameParams.topMargin = 0
         holder.name.layoutParams = nameParams
 
-        holder.name.textSize =
-            if (isGrid) 12f else 16f
-
-        holder.name.maxLines =
-            if (isGrid) 2 else 2
+        holder.name.textSize = if (isGrid) 11f else 15f
+        holder.name.maxLines = 2
 
         val durationParams =
             holder.duration.layoutParams as LinearLayout.LayoutParams
 
-        durationParams.width =
-            ViewGroup.LayoutParams.MATCH_PARENT
-
-        durationParams.height =
-            ViewGroup.LayoutParams.WRAP_CONTENT
-
+        durationParams.width = ViewGroup.LayoutParams.MATCH_PARENT
+        durationParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
         durationParams.marginStart = 0
-        durationParams.topMargin = dp(if (isGrid) 4 else 8)
-
+        durationParams.topMargin = dp(if (isGrid) 3 else 7)
         holder.duration.layoutParams = durationParams
 
-        holder.duration.textSize =
-            if (isGrid) 10f else 12f
+        holder.duration.textSize = if (isGrid) 9f else 11f
 
         val cardParams =
             holder.itemView.layoutParams as? ViewGroup.MarginLayoutParams
@@ -188,7 +170,7 @@ class VideoAdapter(
         cardParams?.let {
             it.marginStart = dp(if (isGrid) 3 else 0)
             it.marginEnd = dp(if (isGrid) 3 else 0)
-            it.bottomMargin = dp(if (isGrid) 7 else 10)
+            it.bottomMargin = dp(7)
             holder.itemView.layoutParams = it
         }
     }
@@ -238,9 +220,7 @@ class VideoAdapter(
         val updatedVideos = newVideos.toList()
 
         val diffCallback = object : DiffUtil.Callback() {
-
             override fun getOldListSize(): Int = oldVideos.size
-
             override fun getNewListSize(): Int = updatedVideos.size
 
             override fun areItemsTheSame(
@@ -261,7 +241,6 @@ class VideoAdapter(
         }
 
         val diffResult = DiffUtil.calculateDiff(diffCallback)
-
         videos = updatedVideos
         diffResult.dispatchUpdatesTo(this)
     }
