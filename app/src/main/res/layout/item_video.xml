@@ -1,44 +1,47 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="?attr/colorOutline">
+    android:layout_marginBottom="7dp"
+    app:cardBackgroundColor="#111111"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
+        android:id="@+id/videoItemContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="10dp">
+        android:padding="7dp">
 
         <ImageView
             android:id="@+id/imageVideoThumbnail"
             android:layout_width="120dp"
             android:layout_height="76dp"
-            android:background="?attr/colorSurfaceVariant"
+            android:background="#202020"
             android:scaleType="centerCrop"
             android:contentDescription="Video küçük resmi" />
 
         <LinearLayout
+            android:id="@+id/videoItemDetails"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="12dp">
+            android:layout_marginStart="10dp">
 
             <TextView
                 android:id="@+id/textVideoName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
+                android:textSize="14sp"
+                android:textStyle="normal"
+                android:textColor="#EEEEEE"
                 android:maxLines="2"
                 android:ellipsize="end" />
 
@@ -46,9 +49,11 @@
                 android:id="@+id/textVideoDuration"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textSize="12sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:layout_marginTop="5dp"
+                android:textSize="11sp"
+                android:textColor="#888888"
+                android:maxLines="2"
+                android:ellipsize="end" />
 
         </LinearLayout>
 
