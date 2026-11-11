@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -25,7 +24,7 @@
             android:layout_height="76dp"
             android:background="#202020"
             android:scaleType="centerCrop"
-            android:contentDescription="Video küçük resmi" />
+            android:contentDescription="@string/video_thumbnail" />
 
         <LinearLayout
             android:id="@+id/videoItemDetails"
