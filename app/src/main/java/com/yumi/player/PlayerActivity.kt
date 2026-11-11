@@ -85,14 +85,14 @@ class PlayerActivity : AppCompatActivity() {
 
             orientationLockButton.text = "🔒"
             orientationLockButton.contentDescription =
-                "Ekran yönü kilitli"
+                getString(R.string.screen_orientation_locked)
         } else {
             requestedOrientation =
                 ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
 
             orientationLockButton.text = "↻"
             orientationLockButton.contentDescription =
-                "Otomatik döndürme açık"
+                getString(R.string.automatic_rotation_enabled)
         }
     }
 
