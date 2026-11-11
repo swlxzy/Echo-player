@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Ana yüzeyler -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+    <color name="app_background">#090909</color>
+    <color name="app_surface">#191919</color>
+    <color name="app_surface_elevated">#242424</color>
+
+    <!-- Metinler -->
+    <color name="text_primary">#F2F2F2</color>
+    <color name="text_secondary">#BDBDBD</color>
+    <color name="text_muted">#888888</color>
+
+    <!-- Amber vurgu paleti -->
+    <color name="color_primary">#E9AD52</color>
+    <color name="color_on_primary">#21180C</color>
+    <color name="color_primary_container">#4A351A</color>
+    <color name="color_on_primary_container">#F6DDB5</color>
+
+    <!-- İkincil renkler -->
+    <color name="color_secondary">#D7B77F</color>
+    <color name="color_on_secondary">#21180C</color>
+    <color name="color_tertiary">#C6A878</color>
+    <color name="color_on_tertiary">#21180C</color>
+
+    <!-- Kenarlık ve durum renkleri -->
+    <color name="color_outline">#45413A</color>
+    <color name="color_error">#CF6679</color>
+
 </resources>
