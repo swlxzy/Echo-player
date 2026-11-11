@@ -44,15 +44,6 @@ class MainActivity : AppCompatActivity() {
     private var isGridView = true
     private var isSearchVisible = false
 
-    private val sortOptions = arrayOf(
-        "İsim: A-Z",
-        "İsim: Z-A",
-        "Boyut: Büyükten küçüğe",
-        "Boyut: Küçükten büyüğe",
-        "Tarih: Yeniden eskiye",
-        "Tarih: Eskiden yeniye"
-    )
-
     private val preferences by lazy {
         getSharedPreferences("yumi_settings", MODE_PRIVATE)
     }
@@ -69,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(
                     this,
-                    "Video izni verilmedi. Klasör seçerek devam edebilirsin.",
+                    R.string.video_permission_denied,
                     Toast.LENGTH_LONG
                 ).show()
 
@@ -98,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: SecurityException) {
                     Toast.makeText(
                         this,
-                        "Klasör erişim izni alınamadı.",
+                        R.string.folder_permission_error,
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -149,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         buttonSettings.setOnClickListener {
             Toast.makeText(
                 this,
-                "Ayarlar ekranı sonraki aşamada eklenecek.",
+                R.string.settings_coming_soon,
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -263,7 +254,7 @@ class MainActivity : AppCompatActivity() {
 
                     Toast.makeText(
                         this,
-                        "${videos.size} video bulundu.",
+                        getString(R.string.videos_found, videos.size),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -302,8 +293,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showSortDialog() {
+        val sortOptions = arrayOf(
+            getString(R.string.sort_name_ascending),
+            getString(R.string.sort_name_descending),
+            getString(R.string.sort_size_descending),
+            getString(R.string.sort_size_ascending),
+            getString(R.string.sort_date_descending),
+            getString(R.string.sort_date_ascending)
+        )
+
         AlertDialog.Builder(this)
-            .setTitle("Videoları sırala")
+            .setTitle(R.string.sort_videos)
             .setSingleChoiceItems(
                 sortOptions,
                 sortPosition
@@ -315,7 +315,7 @@ class MainActivity : AppCompatActivity() {
                 applyFilters()
                 dialog.dismiss()
             }
-            .setNegativeButton("Kapat", null)
+            .setNegativeButton(R.string.close, null)
             .show()
     }
 
@@ -402,7 +402,7 @@ class MainActivity : AppCompatActivity() {
 
                         Toast.makeText(
                             this,
-                            "${videos.size} video bulundu.",
+                            getString(R.string.videos_found, videos.size),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -413,7 +413,7 @@ class MainActivity : AppCompatActivity() {
                     if (!isFinishing && !isDestroyed) {
                         Toast.makeText(
                             this,
-                            "Videolar taranırken hata oluştu.",
+                            R.string.video_scan_error,
                             Toast.LENGTH_LONG
                         ).show()
                     }
