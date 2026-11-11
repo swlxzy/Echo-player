@@ -85,27 +85,68 @@ class VideoRepository(private val context: Context) {
         return videos
     }
 
-    fun getVideosFromFolder(folderUri: Uri): List<VideoItem> {
-        val folder = DocumentFile.fromTreeUri(context, folderUri)
-            ?: return emptyList()
+    fun getVideosFromFolder(
+        folderUri: Uri,
+        includeSubfolders: Boolean = false
+    ): List<VideoItem> {
 
-        return folder.listFiles()
-            .filter { file ->
-                file.isFile && isVideoFile(file.name)
-            }
-            .map { file ->
-                val metadata = getVideoMetadata(file.uri)
+        val rootFolder = try {
+            DocumentFile.fromTreeUri(context, folderUri)
+        } catch (e: Exception) {
+            null
+        } ?: return emptyList()
 
-                VideoItem(
-                    name = file.name ?: "Bilinmeyen video",
-                    uri = file.uri.toString(),
-                    duration = metadata.first,
-                    sizeBytes = file.length(),
-                    width = metadata.second,
-                    height = metadata.third,
-                    lastModified = file.lastModified()
-                )
+        val videos = mutableListOf<VideoItem>()
+        val pendingFolders = mutableListOf(rootFolder)
+        val visitedFolders = mutableSetOf(rootFolder.uri.toString())
+
+        while (pendingFolders.isNotEmpty()) {
+
+            val currentFolder = pendingFolders.removeAt(
+                pendingFolders.lastIndex
+            )
+
+            val children = try {
+                currentFolder.listFiles()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                continue
             }
+
+            for (file in children) {
+                try {
+                    when {
+                        file.isDirectory && includeSubfolders -> {
+                            val folderKey = file.uri.toString()
+
+                            if (visitedFolders.add(folderKey)) {
+                                pendingFolders.add(file)
+                            }
+                        }
+
+                        file.isFile && isVideoFile(file.name) -> {
+                            val metadata = getVideoMetadata(file.uri)
+
+                            videos.add(
+                                VideoItem(
+                                    name = file.name ?: "Bilinmeyen video",
+                                    uri = file.uri.toString(),
+                                    duration = metadata.first,
+                                    sizeBytes = file.length(),
+                                    width = metadata.second,
+                                    height = metadata.third,
+                                    lastModified = file.lastModified()
+                                )
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+
+        return videos
     }
 
     fun getVideoThumbnail(uri: Uri): Bitmap? {
