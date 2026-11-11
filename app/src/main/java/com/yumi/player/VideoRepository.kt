@@ -124,7 +124,7 @@ class VideoRepository(private val context: Context) {
                             }
                         }
 
-                        file.isFile && isVideoFile(file.name) -> {
+                        file.isFile && isVideoFile(file.name, file.type) -> {
                             val metadata = getVideoMetadata(file.uri)
 
                             videos.add(
@@ -223,7 +223,14 @@ class VideoRepository(private val context: Context) {
         }
     }
 
-    private fun isVideoFile(name: String?): Boolean {
+    private fun isVideoFile(
+        name: String?,
+        mimeType: String?
+    ): Boolean {
+        if (mimeType?.startsWith("video/") == true) {
+            return true
+        }
+
         if (name == null) return false
 
         val extension = name
@@ -236,7 +243,16 @@ class VideoRepository(private val context: Context) {
             "webm",
             "avi",
             "mov",
-            "m4v"
+            "m4v",
+            "3gp",
+            "3gpp",
+            "ts",
+            "m2ts",
+            "mts",
+            "mpg",
+            "mpeg",
+            "vob",
+            "flv"
         )
     }
 }
