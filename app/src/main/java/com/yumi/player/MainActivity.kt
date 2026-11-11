@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
             val granted = permissions.values.any { it }
 
             if (granted || hasVideoPermission()) {
-                loadAllVideos()
+                loadPreferredVideos()
             } else {
                 Toast.makeText(
                     this,
@@ -238,11 +238,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun requestVideoPermission() {
         if (hasVideoPermission()) {
-            loadAllVideos()
+            loadPreferredVideos()
         } else {
             videoPermissionLauncher.launch(
                 getRequiredVideoPermissions()
             )
+        }
+    }
+
+    private fun loadPreferredVideos() {
+        if (!restoreSelectedFolder()) {
+            loadAllVideos()
         }
     }
 
@@ -341,33 +347,53 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun restoreSelectedFolder() {
+    private fun restoreSelectedFolder(): Boolean {
         val savedUri = preferences.getString(
             "selected_folder",
             null
-        ) ?: return
+        ) ?: return false
 
-        val folderUri = Uri.parse(savedUri)
-
-        val hasPermission =
-            contentResolver.persistedUriPermissions.any {
-                it.uri == folderUri && it.isReadPermission
-            }
-
-        if (hasPermission) {
-            loadVideos(folderUri)
-        } else {
+        val folderUri = try {
+            Uri.parse(savedUri)
+        } catch (e: Exception) {
             preferences.edit()
                 .remove("selected_folder")
                 .apply()
+            return false
         }
+
+        val hasPermission = try {
+            contentResolver.persistedUriPermissions.any {
+                it.uri == folderUri && it.isReadPermission
+            }
+        } catch (e: Exception) {
+            false
+        }
+
+        if (hasPermission) {
+            loadVideos(folderUri)
+            return true
+        }
+
+        preferences.edit()
+            .remove("selected_folder")
+            .apply()
+
+        return false
     }
 
     private fun loadVideos(folderUri: Uri) {
         scanExecutor.execute {
             try {
-                val videos =
-                    videoRepository.getVideosFromFolder(folderUri)
+                val includeSubfolders = preferences.getBoolean(
+                    "include_subfolders",
+                    false
+                )
+
+                val videos = videoRepository.getVideosFromFolder(
+                    folderUri,
+                    includeSubfolders
+                )
 
                 runOnUiThread {
                     if (!isFinishing && !isDestroyed) {
