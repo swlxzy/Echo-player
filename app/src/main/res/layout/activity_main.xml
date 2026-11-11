@@ -9,7 +9,7 @@
     android:paddingStart="15dp"
     android:paddingEnd="15dp">
 
-    <!-- Üst başlık -->
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="54dp"
@@ -23,7 +23,7 @@
             android:layout_marginEnd="9dp"
             android:src="@drawable/app"
             android:scaleType="fitCenter"
-            android:contentDescription="Yumi Player logosu" />
+            android:contentDescription="@string/app_logo_description" />
 
         <TextView
             android:id="@+id/textAppName"
@@ -48,7 +48,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="Ara" />
+            android:contentDescription="@string/search" />
 
         <TextView
             android:id="@+id/buttonSort"
@@ -61,7 +61,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="Sırala ve filtrele" />
+            android:contentDescription="@string/sort_filter" />
 
         <TextView
             android:id="@+id/buttonSettings"
@@ -74,11 +74,11 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="Ayarlar" />
+            android:contentDescription="@string/settings" />
 
     </LinearLayout>
 
-    <!-- Klasör ve görünüm araçları -->
+    <!-- Folder and view controls -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="45dp"
@@ -95,7 +95,7 @@
             android:gravity="center_vertical"
             android:paddingStart="11dp"
             android:paddingEnd="11dp"
-            android:text="▣  Video klasörü seç"
+            android:text="@string/select_video_folder"
             android:textColor="#E5E5E5"
             android:textSize="13sp"
             android:background="#191919"
@@ -114,7 +114,7 @@
             android:background="#191919"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="Liste görünümü" />
+            android:contentDescription="@string/list_view" />
 
         <TextView
             android:id="@+id/buttonGridView"
@@ -128,18 +128,18 @@
             android:background="#292929"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="Izgara görünümü" />
+            android:contentDescription="@string/grid_view" />
 
     </LinearLayout>
 
-    <!-- Arama alanı -->
+    <!-- Search -->
     <EditText
         android:id="@+id/editSearch"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:layout_marginBottom="9dp"
         android:background="#191919"
-        android:hint="Video ara..."
+        android:hint="@string/search_video_hint"
         android:textColor="#FFFFFF"
         android:textColorHint="#888888"
         android:paddingStart="12dp"
@@ -148,14 +148,14 @@
         android:inputType="text"
         android:visibility="gone" />
 
-    <!-- Mevcut sıralama altyapısıyla uyumluluk -->
+    <!-- Hidden sorting compatibility view -->
     <Spinner
         android:id="@+id/spinnerSort"
         android:layout_width="1dp"
         android:layout_height="1dp"
         android:visibility="gone" />
 
-    <!-- Video listesi -->
+    <!-- Video list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewVideos"
         android:layout_width="match_parent"
