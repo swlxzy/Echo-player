@@ -17,6 +17,35 @@
         app:keep_content_on_player_reset="true"
         app:resize_mode="fit" />
 
+    <!-- Basılı tutma sırasında gösterilecek 2x göstergesi -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/speedIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="76dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="#E9AD52"
+        app:cardCornerRadius="50dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="0dp">
+
+        <TextView
+            android:id="@+id/speedIndicatorText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="2x"
+            android:textColor="#21180C"
+            android:textSize="13sp"
+            android:fontFamily="sans"
+            android:includeFontPadding="false" />
+
+    </com.google.android.material.card.MaterialCardView>
+
     <TextView
         android:id="@+id/orientationLockButton"
         android:layout_width="48dp"
