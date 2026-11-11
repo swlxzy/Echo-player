@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.util.Locale
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
@@ -70,6 +71,7 @@ class VideoAdapter(
         position: Int
     ) {
         val video = videos[position]
+        val context = holder.itemView.context
 
         val isGrid =
             (holder.itemView.parent as? RecyclerView)
@@ -80,13 +82,17 @@ class VideoAdapter(
         holder.name.text = video.name
 
         val durationText = formatDuration(video.duration)
-        val sizeText = formatFileSize(video.sizeBytes)
+        val sizeText = formatFileSize(context, video.sizeBytes)
 
         val resolutionText =
             if (video.width > 0 && video.height > 0) {
-                "${video.width} × ${video.height}"
+                context.getString(
+                    R.string.video_resolution_format,
+                    video.width,
+                    video.height
+                )
             } else {
-                "Çözünürlük bilinmiyor"
+                context.getString(R.string.unknown_resolution)
             }
 
         holder.duration.text =
@@ -252,21 +258,43 @@ class VideoAdapter(
         val seconds = totalSeconds % 60
 
         return if (hours > 0) {
-            String.format("%02d:%02d:%02d", hours, minutes, seconds)
+            String.format(
+                Locale.ROOT,
+                "%02d:%02d:%02d",
+                hours,
+                minutes,
+                seconds
+            )
         } else {
-            String.format("%02d:%02d", minutes, seconds)
+            String.format(
+                Locale.ROOT,
+                "%02d:%02d",
+                minutes,
+                seconds
+            )
         }
     }
 
-    private fun formatFileSize(sizeBytes: Long): String {
-        if (sizeBytes <= 0) return "Bilinmeyen boyut"
+    private fun formatFileSize(
+        context: android.content.Context,
+        sizeBytes: Long
+    ): String {
+        if (sizeBytes <= 0) {
+            return context.getString(R.string.unknown_size)
+        }
 
         val megabytes = sizeBytes / (1024.0 * 1024.0)
 
         return if (megabytes >= 1024) {
-            String.format("%.2f GB", megabytes / 1024)
+            context.getString(
+                R.string.video_size_gigabytes,
+                megabytes / 1024
+            )
         } else {
-            String.format("%.1f MB", megabytes)
+            context.getString(
+                R.string.video_size_megabytes,
+                megabytes
+            )
         }
     }
 }
