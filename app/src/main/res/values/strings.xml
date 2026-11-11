@@ -30,6 +30,13 @@
     <string name="screen_orientation_locked">Screen orientation locked</string>
     <string name="automatic_rotation_enabled">Automatic rotation enabled</string>
 
+    <!-- Video information -->
+    <string name="unknown_resolution">Unknown resolution</string>
+    <string name="unknown_size">Unknown size</string>
+    <string name="video_resolution_format">%1$d × %2$d</string>
+    <string name="video_size_megabytes">%1$.1f MB</string>
+    <string name="video_size_gigabytes">%1$.2f GB</string>
+
     <!-- Messages -->
     <string name="video_permission_denied">Video permission was not granted. You can continue by selecting a folder.</string>
     <string name="folder_permission_error">Could not obtain folder access permission.</string>
