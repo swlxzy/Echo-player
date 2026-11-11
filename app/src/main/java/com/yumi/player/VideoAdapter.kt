@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.RejectedExecutionException
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
@@ -197,20 +198,26 @@ class VideoAdapter(
 
         holder.thumbnail.setImageDrawable(null)
 
-        thumbnailExecutor.execute {
-            val bitmap = repository.getVideoThumbnail(
-                android.net.Uri.parse(video.uri)
-            )
+        if (thumbnailExecutor.isShutdown) return
 
-            if (bitmap != null) {
-                thumbnailCache.put(video.uri, bitmap)
+        try {
+            thumbnailExecutor.execute {
+                val bitmap = repository.getVideoThumbnail(
+                    android.net.Uri.parse(video.uri)
+                )
 
-                holder.thumbnail.post {
-                    if (holder.thumbnail.tag == video.uri) {
-                        holder.thumbnail.setImageBitmap(bitmap)
+                if (bitmap != null) {
+                    thumbnailCache.put(video.uri, bitmap)
+
+                    holder.thumbnail.post {
+                        if (holder.thumbnail.tag == video.uri) {
+                            holder.thumbnail.setImageBitmap(bitmap)
+                        }
                     }
                 }
             }
+        } catch (e: RejectedExecutionException) {
+            // Executor kapanmışsa yeni küçük resim görevi başlatılmaz.
         }
     }
 
@@ -218,6 +225,11 @@ class VideoAdapter(
         holder.thumbnail.tag = null
         holder.thumbnail.setImageDrawable(null)
         super.onViewRecycled(holder)
+    }
+
+    fun shutdown() {
+        thumbnailExecutor.shutdownNow()
+        thumbnailCache.evictAll()
     }
 
     override fun getItemCount(): Int = videos.size
