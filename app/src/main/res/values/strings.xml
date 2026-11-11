@@ -1,4 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Application -->
     <string name="app_name">Yumi Player</string>
+    <string name="app_logo_description">Yumi Player logo</string>
+
+    <!-- Main screen -->
+    <string name="search">Search</string>
+    <string name="sort_filter">Sort and filter</string>
+    <string name="settings">Settings</string>
+    <string name="select_video_folder">▣  Select video folder</string>
+    <string name="list_view">List view</string>
+    <string name="grid_view">Grid view</string>
+    <string name="search_video_hint">Search videos...</string>
+    <string name="video_thumbnail">Video thumbnail</string>
+
+    <!-- Sorting -->
+    <string name="sort_videos">Sort videos</string>
+    <string name="sort_name_ascending">Name: A-Z</string>
+    <string name="sort_name_descending">Name: Z-A</string>
+    <string name="sort_size_descending">Size: Largest first</string>
+    <string name="sort_size_ascending">Size: Smallest first</string>
+    <string name="sort_date_descending">Date: Newest first</string>
+    <string name="sort_date_ascending">Date: Oldest first</string>
+    <string name="close">Close</string>
+
+    <!-- Player -->
+    <string name="screen_rotation_lock">Screen rotation lock</string>
+    <string name="screen_orientation_locked">Screen orientation locked</string>
+    <string name="automatic_rotation_enabled">Automatic rotation enabled</string>
+
+    <!-- Messages -->
+    <string name="video_permission_denied">Video permission was not granted. You can continue by selecting a folder.</string>
+    <string name="folder_permission_error">Could not obtain folder access permission.</string>
+    <string name="settings_coming_soon">Settings screen will be added in a future update.</string>
+    <string name="videos_found">%1$d videos found.</string>
+    <string name="video_scan_error">An error occurred while scanning videos.</string>
+
 </resources>
