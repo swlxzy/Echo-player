@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.util.Locale
-import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.ThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
@@ -34,7 +34,8 @@ class VideoAdapter(
         2,
         30L,
         TimeUnit.SECONDS,
-        LinkedBlockingQueue()
+        ArrayBlockingQueue(64),
+        ThreadPoolExecutor.DiscardOldestPolicy()
     )
 
     private lateinit var repository: VideoRepository
