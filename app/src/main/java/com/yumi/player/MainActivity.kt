@@ -1,6 +1,7 @@
 package com.yumi.player
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -8,9 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.content.Context
 import android.widget.EditText
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var videoAdapter: VideoAdapter
     private lateinit var videoRepository: VideoRepository
     private lateinit var editSearch: EditText
-    private lateinit var spinnerSort: Spinner
 
     private lateinit var buttonSearch: TextView
     private lateinit var buttonSort: TextView
@@ -102,7 +100,6 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewVideos)
         editSearch = findViewById(R.id.editSearch)
-        spinnerSort = findViewById(R.id.spinnerSort)
 
         buttonSearch = findViewById(R.id.buttonSearch)
         buttonSort = findViewById(R.id.buttonSort)
@@ -110,10 +107,17 @@ class MainActivity : AppCompatActivity() {
         buttonListView = findViewById(R.id.buttonListView)
         buttonGridView = findViewById(R.id.buttonGridView)
 
-        val buttonSelectFolder =
-            findViewById<TextView>(R.id.buttonSelectFolder)
-
         videoRepository = VideoRepository(this)
+
+        sortPosition = preferences.getInt(
+            "sort_position",
+            0
+        ).coerceIn(0, 5)
+
+        isGridView = preferences.getBoolean(
+            "grid_view",
+            true
+        )
 
         videoAdapter = VideoAdapter(emptyList()) { video ->
             val intent = Intent(this, PlayerActivity::class.java)
@@ -123,7 +127,10 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.adapter = videoAdapter
 
-        setGridView(true)
+        setGridView(isGridView)
+
+        val buttonSelectFolder =
+            findViewById<TextView>(R.id.buttonSelectFolder)
 
         buttonSelectFolder.setOnClickListener {
             folderPicker.launch(null)
@@ -310,7 +317,10 @@ class MainActivity : AppCompatActivity() {
             ) { dialog, which ->
 
                 sortPosition = which
-                spinnerSort.setSelection(which)
+
+                preferences.edit()
+                    .putInt("sort_position", sortPosition)
+                    .apply()
 
                 applyFilters()
                 dialog.dismiss()
@@ -321,6 +331,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setGridView(grid: Boolean) {
         isGridView = grid
+
+        preferences.edit()
+            .putBoolean("grid_view", grid)
+            .apply()
 
         if (grid) {
             recyclerView.layoutManager =
@@ -467,6 +481,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        videoAdapter.shutdown()
         scanExecutor.shutdownNow()
         super.onDestroy()
     }
